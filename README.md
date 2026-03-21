@@ -76,7 +76,6 @@ You can register your own account or use the test credentials below to skip the 
 ---
 
 ### ⚖️ Trade-offs & Future Roadmap
-**Trade-off:** I prioritized **Native ESM** and **Next.js 16** to ensure the project uses 2026 industry standards, even though it required more complex dependency management during setup.
 **Trade-off:** Used HTTP-only cookies over LocalStorage for JWTs to ensure a **Security-First** approach, sacrificing a bit of simplicity for better protection.
 
 **FUTURE**
