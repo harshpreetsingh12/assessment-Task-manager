@@ -1,49 +1,85 @@
-Smart Task Manager (AI-Powered)
-    This is a full-stack task manager I built to actually make productivity feel "smart." It’s got secure login, and the best part—an AI Daily Briefing that uses Groq (Llama 3.3) to tell you exactly how to tackle your day.
+# Smart Task Manager (AI-Powered)
 
-The Tech Stack
-    I kept things modern and fast:
+A modern, full-stack productivity application that transforms a standard task list into a strategic plan using Generative AI. 
 
-    Frontend: Next.js 15 (App Router) + Tailwind CSS .
-    Backend: Node.js & Express.
-    Database: MongoDB with Mongoose .
-    AI: Groq LPU (Llama 3.3 70B) — it's fast for generating summaries.
-    Auth: JWTs tucked away in HTTP-Only Cookies.
+** Live Demo:** [https://task-manager-teal-phi-87.vercel.app/]
 
-How to set it up (from scratch)
-    The project is split into two folders: frontend and backend. You’ll need to set up .env files for both.
+---
 
-    1. The Backend
-        Bash
-        cd backend
-        npm install
-        # Create a .env file and paste everything from .env.sample file:
-            PORT=5000
-            MONGO_URI=your_mongodb_url
-            JWT_SECRET=something_random_and_long
-            GROQ_API_KEY=your_groq_key
-            FRONTEND_URL=http://localhost:3000
-            NODE_ENV=development
-            npm run dev to start the server.
+###  Key Features
+* **AI Daily Briefing:** Leverages **Groq (Llama 3.3 70B)** to analyze your tasks and generate a high-speed productivity summary.
+* **Secure Authentication:** Custom Auth flow using **JWT** stored in **HTTP-Only Cookies** for maximum security against XSS.
+* **Responsive Dashboard:** A clean, minimalist UI built with **Next.js 15** and **Tailwind CSS**.
+* **Real-time Feedback:** Toast notifications and loading skeletons for a seamless user experience.
 
-    2. The Frontend
-        Bash
-        cd frontend
-        npm install
-        # Create a .env.local file and paste this:
-        NEXT_PUBLIC_API_URL=http://localhost:5000/api
-        npm run dev and you’re live at localhost:3000.
+---
 
-Project Structure
-    /backend
-    ├── src/models      # Task & User schemas
-    ├── src/controllers # The logic for tasks, auth, and AI
-    ├── src/middleware  # Auth checks
-    /frontend
-    ├── src/app         # Next.js pages & layouts
-    ├── src/context     # AuthContext (keeps user data everywhere)
-    ├── src/components  # Modals, Task cards, AI summary box
+###  The Tech Stack
 
+| Layer | Technology |
+| :--- | :--- |
+| **Frontend** | Next.js 16 (App Router), Tailwind CSS |
+| **Backend** | Node.js, Express.js |
+| **Database** | MongoDB with Mongoose |
+| **AI Engine** | Groq LPU (Llama 3.3 70B Model) |
+| **Deployment** | Vercel (Frontend), Render (Backend) |
 
+---
 
-Note: Initial login may take up to 60 seconds as the backend wakes up from sleep on the Free Tier on prod
+###  Local Setup (From Scratch) use env.sample files for help
+
+#### **1. Backend**
+```bash
+    cd backend
+    npm install
+    # Create a .env file based on the keys below:
+    PORT=5000
+    MONGO_URI=your_mongodb_url
+    JWT_SECRET=your_secret_key
+    GROQ_API_KEY=your_groq_key
+    FRONTEND_URL=http://localhost:3000
+    NODE_ENV=development
+
+    npm run dev
+```
+
+#### **2. Frontend**
+```bash
+    cd frontend
+    npm install
+    NEXT_PUBLIC_API_URL=http://localhost:5000/api
+
+    npm run dev
+```
+
+---
+
+### 📂 Project Structure
+* **`/backend`**:
+    * `src/models`: Mongoose schemas for Users and Tasks.
+    * `src/controllers`: Core logic for auth, task CRUD, and AI integration.
+    * `src/middleware`: JWT verification and global error handling.
+* **`/frontend`**:
+    * `src/app`: Next.js App Router pages and layouts.
+    * `src/context`: Global Auth state management.
+    * `src/components`: UI components (Modals, Task Cards, AI Summary).
+
+---
+
+### 🧪 Testing Credentials
+You can register your own account or use the test credentials below to skip the setup:
+* **Email:** `test@gmail.com`
+* **Password:** `test123`
+
+> **⏳ Note on Deployment:** The backend is hosted on Render's free tier. If the site hasn't been visited recently, the server will "sleep." **Please allow up to 60 seconds for the initial wake-up** during your first login attempt.
+
+---
+
+### ⚖️ Trade-offs & Future Roadmap
+**Trade-off:** I prioritized **Native ESM** and **Next.js 16** to ensure the project uses 2026 industry standards, even though it required more complex dependency management during setup.
+**Trade-off:** Used HTTP-only cookies over LocalStorage for JWTs to ensure a **Security-First** approach, sacrificing a bit of simplicity for better protection.
+
+**FUTURE**
+Automated Productivity Pipelines: Implement Node-Cron or GitHub Actions to trigger "Morning Briefings" at 8:00 AM daily, sending AI summaries directly to users via Web Push Notifications so they can stay productive without even opening the dashboard.
+
+Utilize Redis to store generated AI briefings. This will drastically reduce Groq API latency and cost by serving cached summaries for users whose task lists haven't changed.
