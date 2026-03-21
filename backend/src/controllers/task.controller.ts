@@ -94,12 +94,30 @@ export const getAiSummary = async (req: any, res: Response) => {
         summary: "You have no pending tasks for today. Enjoy your day!",
       });
     }
+    
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+    res.flushHeaders();
 
-    // Delegate to the Service
-    const summary = await aiService.generateDailyBriefing(tasks);
+    try {
+        await aiService.streamDailyBriefing(tasks, (chunk) => {
+          console.log(chunk)
+            const response= res.write(`data: ${JSON.stringify({ chunk })}\n\n`); 
+            
+            if ((res as any).flush) {
+                (res as any).flush(); 
+            }
 
-    // Send Response
-    res.json({ summary });
+        });
+
+        res.write(`data: ${JSON.stringify({ done: true })}\n\n`); // signal end
+    } catch (err) {
+      console.log(err)
+        res.write(`data: ${JSON.stringify({ error: "Stream failed" })}\n\n`);
+    } finally {
+        res.end();
+    }
 
   } catch (error) {
     // Graceful Failure Handling)

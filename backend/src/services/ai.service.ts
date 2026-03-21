@@ -14,46 +14,52 @@ export class AIService {
     this.client = new Groq({ apiKey: CONF.GROQ_API_KEY });
   }
 
-  async generateDailyBriefing(tasks: ITask[]): Promise<string> {
-    const taskListString = tasks
-        .map((t, i) => {
-            const due = t.taskDate
-            ? `Date: ${new Date(t.taskDate).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}`
-            : "No date";
 
-            const desc = t.description ? `Note: ${t.description}` : "";
+  private async *fakeSteam(text: string): AsyncGenerator<string> {
+      const words = text.split(' ');
+      for (const word of words) {
+          await new Promise(res => setTimeout(res, 80)); // ~80ms per word
+          yield word + " ";
+      }
+  }
 
-            return `${i + 1}. ${t.title} [Priority: ${t.priority}] [${due}]${desc ? ` — ${desc}` : ""}`;
-        })
-        .join("\n");
+  async streamDailyBriefing(tasks: ITask[], onChunk: (chunk: string) => void): Promise<void> {
+      const taskListString = tasks
+          .map((t, i) => {
+              const due = t.taskDate
+                  ? `Date: ${new Date(t.taskDate).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}`
+                  : "No date";
+              const desc = t.description ? `Note: ${t.description}` : "";
+              return `${i + 1}. ${t.title} [Priority: ${t.priority}] [${due}]${desc ? ` — ${desc}` : ""}`;
+          })
+          .join("\n");
 
-   const prompt = PROMPTS.SUMMARY_GEN(taskListString)
+      const prompt = PROMPTS.SUMMARY_GEN(taskListString);
 
-    try {
-        const completion = await this.client.chat.completions.create({
-            model: CONF.GROQ_MODELS,
-            messages: [{ role: "user", content: prompt }],
-            max_tokens: 300,
-        });
-        const raw = completion.choices[0].message.content!;
-        try {
-            const parsed = JSON.parse(raw);
-            return parsed.summary;
-        } catch (parseError) {
-            // LLM returned malformed JSON — build a local fallback
-            console.warn("JSON parse failed, using fallback summary");
-            return this.buildFallbackSummary(tasks);
-        }
 
-    } catch (error) {
-        console.error("Groq API Error:", error);
-        //   throw new Error("Failed to communicate with AI service.");
-        return this.buildFallbackSummary(tasks); // sending custom summary for response
-    }
+      // this.buildFallbackSummary(tasks,onChunk);
+      // return
+      try {
+          const stream = await this.client.chat.completions.create({
+              model: CONF.GROQ_MODELS,
+              messages: [{ role: "user", content: prompt }],
+              max_tokens: 300,
+              stream: true,
+          });
+
+          for await (const chunk of stream) {
+              const delta = chunk.choices[0]?.delta?.content ?? "";
+              if (delta) onChunk(delta);
+          }
+
+      } catch (error) {
+          console.error("Groq Stream Error:", error);
+         this.buildFallbackSummary(tasks,onChunk);
+      }
   }
 
   // fallback to generate generric summary if ai failes
-  private buildFallbackSummary(tasks: ITask[]): string {
+  private async buildFallbackSummary(tasks: ITask[],onChunk: (chunk: string) => void): string {
     const total = tasks.length;
     const high = tasks.filter(t => t.priority === "high").length;
     const overdue = tasks.filter(t => t.taskDate && new Date(t.taskDate) < new Date()).length;
@@ -74,7 +80,13 @@ export class AIService {
   
     parts.push("Stay focused — you've got this!");
   
-    return parts.join(" ");
+    const fallBackmsg=parts.join(" ")
+
+    const stream=this.fakeSteam(fallBackmsg)
+    for await (const chunk of stream) {
+      onChunk(chunk);
+    }
+
   }
 
 }
@@ -118,3 +130,4 @@ export class AIService {
 // }
 
 export const aiService = new AIService();
+

@@ -81,7 +81,7 @@ export default function Dashboard() {
                 Logout
             </button>
             </div>
-            <AISummary tasks={tasks} />
+            <AISummary />
         </section>
 
         {/*  Filter & Actions */}

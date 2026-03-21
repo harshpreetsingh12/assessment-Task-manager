@@ -34,3 +34,23 @@ export const apiClient = async (endpoint: string, options: RequestInit = {}) => 
     throw err;
   }
 };
+
+export const apiStreamClient = async (endpoint: string, options: RequestInit = {}) => {
+  const headers: { [key: string]: string } = {
+    ...(options.headers as { [key: string]: string }),
+  };
+
+  const response = await fetch(`${BASE_URL}${endpoint}`, {
+    ...options,
+    credentials: 'include',
+    headers,
+  });
+
+  if (!response.ok) {
+    console.log(response)
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || 'Stream Request Failed');
+  }
+
+  return response; 
+};

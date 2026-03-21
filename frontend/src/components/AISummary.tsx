@@ -1,38 +1,99 @@
 'use client';
 
 import { format } from 'date-fns';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { taskService } from '@/services/task.service';
 import { showToast } from '@/lib/toast';
 import { useTypewriter } from '@/hooks/useTypewriter';
 
-export default function AISummary({ tasks }: { tasks: any[] }) {
+// this generates summary of today 
+export default function AISummary() {
   const [summary, setSummary] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
-  const displayText = useTypewriter(summary);
+  const [isStreaming, setIsStreaming] = useState(false); 
+
+  const accumulatedRef = useRef<string>("");
+  const renderedRef = useRef<string>("");
+
+  // const displayText = useTypewriter(summary);
+
+  useEffect(() => {
+      if (!isStreaming) return;
+
+      let rafId: number;
+
+      const sync = () => {
+          // Only call setSummary if ref has new content since last paint
+          if (accumulatedRef.current !== renderedRef.current) {
+              renderedRef.current = accumulatedRef.current;
+              setSummary(accumulatedRef.current);
+          }
+          rafId = requestAnimationFrame(sync); // keep looping until there is nothing to write in accumulated
+      };
+
+      rafId = requestAnimationFrame(sync); // first paint
+
+      return () => cancelAnimationFrame(rafId); // cleanup when isStreaming → false
+  }, [isStreaming]);
 
   const handleGenerate = async () => {
-    if (tasks.length === 0) {
-      showToast.info("No tasks found", "Add some tasks first to get a briefing!");
-      return;
-    }
-
     setIsGenerating(true);
+    setSummary(""); // clear previous summary
+    accumulatedRef.current=''
+    renderedRef.current=''
+    
     try {
-         const formattedDate = format(new Date(), 'yyyy-MM-dd'); //today date
-        const response = await taskService.getAISummary(formattedDate);
-        if(response.ok){
-            setSummary(response.data.summary);
-            showToast.ai("Briefing Ready", "Your AI coach has analyzed your day.");
-        }
-        else{
-            showToast.error("AI Error", "Could not reach the AI coach.");
-        }
-    } catch (err) {
-        console.log(err)
+      const formattedDate = format(new Date(), "yyyy-MM-dd");
+
+      const res = await taskService.getAISummary(formattedDate);
+
+      if (!res.ok) {
         showToast.error("AI Error", "Could not reach the AI coach.");
+        return;
+      }
+
+      const reader = res.body!.getReader();
+      const decoder = new TextDecoder();
+      let started = false; // track first chunk to show toast once
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const text = decoder.decode(value);
+
+        for (const line of text.split("\n")) {
+          if (!line.startsWith("data: ")) continue;
+
+          const payload = JSON.parse(line.slice(6));
+          console.log(payload)
+          if (payload.error) {
+            console.log(payload.error)
+            showToast.error("AI Error", "Could not reach the AI coach.");
+            return;
+          }
+
+          if (payload.done) {
+            showToast.ai(
+              "Briefing Ready",
+              "Your AI coach has analyzed your day.",
+            );
+            return;
+          }
+
+          if (payload.chunk) {
+            console.log(payload.chunk)
+            if (!isStreaming) setIsStreaming(true); // start the rAF loop
+            setIsGenerating(false);
+            accumulatedRef.current += payload.chunk; 
+          }
+        }
+      }
+    } catch (err) {
+      console.log(err);
+      showToast.error("AI Error", "Could not reach the AI coach.");
     } finally {
-        setIsGenerating(false);
+      setIsGenerating(false);
     }
   };
 
@@ -68,7 +129,7 @@ export default function AISummary({ tasks }: { tasks: any[] }) {
             </div>
           ) : (
             <p className="text-zinc-300 leading-relaxed font-medium">
-              {displayText || "Ready to plan your day? Click generate for your personalized AI briefing."}
+              {summary || "Ready to plan your day? Click generate for your personalized AI briefing."}
             </p>
           )}
         </div>

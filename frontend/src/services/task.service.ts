@@ -1,4 +1,4 @@
-import { apiClient } from './apiClient';
+import { apiClient, apiStreamClient } from './apiClient';
 
 export const taskService = {
   getTasks: (date: string) => 
@@ -11,5 +11,5 @@ export const taskService = {
     apiClient(`/tasks/${id}`, { method: 'DELETE' }),
     
   getAISummary: (date: string) => 
-    apiClient(`/tasks/summary?date=${date}`, { method: 'GET' }),
+    apiStreamClient(`/tasks/summary?date=${date}`, { method: 'GET' }),
 };
