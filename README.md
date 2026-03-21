@@ -43,3 +43,7 @@ Project Structure
     ├── src/app         # Next.js pages & layouts
     ├── src/context     # AuthContext (keeps user data everywhere)
     ├── src/components  # Modals, Task cards, AI summary box
+
+
+
+Note: Initial login may take up to 60 seconds as the backend wakes up from sleep on the Free Tier
