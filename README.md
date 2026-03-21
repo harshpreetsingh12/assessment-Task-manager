@@ -46,4 +46,4 @@ Project Structure
 
 
 
-Note: Initial login may take up to 60 seconds as the backend wakes up from sleep on the Free Tier
+Note: Initial login may take up to 60 seconds as the backend wakes up from sleep on the Free Tier on prod
