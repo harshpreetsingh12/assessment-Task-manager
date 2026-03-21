@@ -6,18 +6,21 @@ import { aiService } from '../services/ai.service';
 // create a New Task
 export const createTask = async (req: any, res: Response) => {
   try {
-    const { title, description, priority, dueDate } = req.body;
+    const { title, description, priority, taskDate } = req.body;
 
     if (!title) {
       return res.status(400).json({ message: 'Title is required' });
     }
+
+    const neutralDate= new Date(taskDate);
+    neutralDate.setUTCHours(0, 0, 0, 0);
 
     const task = await Task.create({
       userId: req.user.id, // Attached by auth middleware
       title,
       description,
       priority,
-      dueDate,
+      taskDate:neutralDate,
     });
 
     res.status(201).json(task);
@@ -30,8 +33,20 @@ export const createTask = async (req: any, res: Response) => {
 // Get All User Tasks
 export const getTasks = async (req: any, res: Response) => {
   try {
-    // Only fetch tasks belonging to the logged-in user
-    const tasks = await Task.find({ userId: req.user.id }).sort({ createdAt: -1 });
+    const { date } = req.query; // Expecting "2026-03-21"
+    
+    if (!date) {
+      return res.status(400).json({ message: "Date parameter is required" });
+    }
+
+    const queryDate = new Date(date as string);
+    queryDate.setUTCHours(0, 0, 0, 0);
+
+    const tasks = await Task.find({
+      userId: req.user.id,
+      taskDate: queryDate
+    }).sort({ createdAt: -1 }); 
+
     res.json(tasks);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching tasks' });
@@ -62,17 +77,16 @@ export const deleteTask = async (req: any, res: Response) => {
 export const getAiSummary = async (req: any, res: Response) => {
   try {
 
-    // Fetch Today's Tasks (Logic we discussed previously)
-    const startOfToday = new Date();
-    startOfToday.setHours(0, 0, 0, 0);
-    
-    const tasks = await Task.find({
-      userId: req.user.id,
-      status: 'pending',
-      $or: [
-        { dueDate: { $gte: startOfToday } },
-        { createdAt: { $gte: startOfToday } }
-      ]
+    const { date } = req.query; // date to generate summary for
+
+    const today = new Date(date);
+    today.setUTCHours(0, 0, 0, 0);
+
+    // Fetch only tasks for today that aren't completed yet
+    const tasks = await Task.find({ 
+      userId: req.user.id, 
+      taskDate: today,
+      status: { $ne: 'completed' } 
     });
 
     if (tasks.length === 0) {

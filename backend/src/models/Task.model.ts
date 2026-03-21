@@ -6,7 +6,7 @@ export interface ITask extends Document {
   description?: string;
   priority: 'low' | 'medium' | 'high';
   status: 'pending' | 'completed';
-  createdAt: Date;
+  taskDate: Date;
 }
 
 const taskSchema = new Schema<ITask>(
@@ -24,14 +24,13 @@ const taskSchema = new Schema<ITask>(
       enum: ['pending','progress', 'completed'],
       default: 'pending',
     },
-    dueDate: { type: Date }, 
+    taskDate: { type: Date }, 
   },
   { timestamps: true }
 );
 
-taskSchema.index({ userId: 1, status: 1 });
-
-taskSchema.index({ userId: 1 });
+taskSchema.index({ userId: 1, taskDate: 1 });
+taskSchema.index({ status: 1 }); // for getting task with status primarily
 
 const Task = mongoose.model<ITask>('Task', taskSchema);
 export default Task;
