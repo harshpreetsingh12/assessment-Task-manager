@@ -67,7 +67,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// Senior Practice: Custom hook for cleaner component imports
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) throw new Error('useAuth must be used within AuthProvider');
