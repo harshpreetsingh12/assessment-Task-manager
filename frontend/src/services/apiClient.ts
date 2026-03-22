@@ -1,3 +1,5 @@
+import { showToast } from "@/lib/toast";
+
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
 
 export const apiClient = async (endpoint: string, options: RequestInit = {}) => {
@@ -20,8 +22,14 @@ export const apiClient = async (endpoint: string, options: RequestInit = {}) => 
     clearTimeout(timeout);
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || 'API Request Failed');
+        const errorData = await response.json().catch(() => ({}));
+      const error: any = new Error(errorData.message || 'API Request Failed');
+      error.response = {
+        status: response.status,
+        data: errorData
+      };
+      handleApiError(error);
+      throw error;
     }
 
     const text = await response.text();
@@ -48,8 +56,39 @@ export const apiStreamClient = async (endpoint: string, options: RequestInit = {
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || 'Stream Request Failed');
+    const error: any = new Error(errorData.message || 'API Request Failed');
+    error.response = {
+      status: response.status,
+      data: errorData
+    };
+    handleApiError(error);
+    throw error;
   }
 
   return response; 
+};
+
+const handleApiError = (err: any, fallbackMessage: string = "An unexpected error occurred") => {
+  const status = err.response?.status;
+  const serverMessage = err.response?.data?.message || err.message;
+  
+  switch (status) {
+    case 401:
+      showToast.error("Session Expired", "Please log in again.",'sessionError');
+      break;
+    case 403:
+      showToast.error("Access Denied", "You don't have permission to do that.",'accessDenied');
+      break;
+    case 429:
+      showToast.error("Too Many Requests", "Slow down! You're hitting the rate limit.",'toomanyReq');
+      break;
+    case 400:
+      showToast.error("Validation Error", serverMessage || "Please check your input.", 'badRequest');
+      break;
+    case 500:
+      showToast.error("Server Error", "Something went wrong on our end.",'InternalSerr');
+      break;
+    default:
+      showToast.error("Error", serverMessage || fallbackMessage);
+  }
 };

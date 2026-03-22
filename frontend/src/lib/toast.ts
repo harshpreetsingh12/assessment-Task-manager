@@ -9,11 +9,12 @@ export const showToast = {
     });
   },
 
-  error: (title: string, description?: string) => {
+  error: (title: string, description?: string,id?:string) => {
     toast.error(title, {
       description,
     //   className: 'bg-zinc-900 border-red-900/50 text-white rounded-2xl p-4',
       descriptionClassName: 'text-red-400/80 text-xs',
+      ...(id? {id}:{})
     });
   },
 
