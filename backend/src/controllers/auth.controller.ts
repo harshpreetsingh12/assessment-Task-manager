@@ -19,11 +19,16 @@ const COOKIE_OPTIONS: CookieOptions = {
   path: '/',
 };
 
+interface RegisterRequest {
+  email: string;
+  password: string;
+  name?: string;
+}
+
 export const register = async (req: Request, res: Response) => {
   try {
     
-    const { email, password, name=null } = req.body;
-
+    const { email, password, name=null }:RegisterRequest = req.body;
 
     const handle:string= name ?? randomName()
     const userExists = await User.findOne({ email });
@@ -49,9 +54,13 @@ export const register = async (req: Request, res: Response) => {
   }
 };
 
+interface LoginRequest {
+  email: string;
+  password: string;
+}
 export const login = async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
+    const { email, password }:LoginRequest = req.body;
 
     const user = await User.findOne({ email });
 
@@ -80,7 +89,7 @@ export const logout = (req: Request, res: Response) => {
     expires: new Date(0), // Set to January 1, 1970
     secure: process.env.NODE_ENV === 'production',
     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-    path: '/', // Ensure this matches the path used when setting the cookie
+    path: '/',
   });
 
   res.status(200).json({ message: 'Logged out successfully' });
