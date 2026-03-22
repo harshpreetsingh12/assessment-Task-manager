@@ -33,5 +33,14 @@ export const showToast = {
       className: 'bg-black border-purple-600/50 text-white rounded-2xl p-4 shadow-[0_0_20px_rgba(147,51,234,0.2)]',
       descriptionClassName: 'text-zinc-300 italic text-xs',
     });
-  }
+  },
+  promise: (promise: Promise<any>, { loading, success, error }: { loading: string; success: string; error: string }) => {
+    return toast.promise(promise, {
+      loading,
+      success,
+      error,
+      className: 'bg-zinc-900 border-zinc-800 text-white rounded-2xl p-4',
+      descriptionClassName: 'text-zinc-400 text-xs',
+    });
+  },
 };

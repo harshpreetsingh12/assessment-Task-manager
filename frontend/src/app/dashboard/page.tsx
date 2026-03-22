@@ -59,11 +59,23 @@ export default function Dashboard() {
 
     const handleDelete = async (id: string) => {
         try {
-        await taskService.deleteTask(id);
-        setTasks(tasks.filter((t: ITask) => t._id !== id));
-        showToast.success('Task Deleted');
+            const deletePromise = taskService.deleteTask(id);
+
+            showToast.promise(deletePromise, {
+                loading: 'Deleting your task...',
+                success: 'Task removed successfully',
+                error: 'Failed to delete task',
+            });
+            try {
+                const response= await deletePromise;
+                if(response.ok){
+                    setTasks(tasks.filter((t: ITask) => t._id !== id));
+                }
+            } catch (err) {
+                console.error("Delete error:", err);
+            }
         } catch (err) {
-        showToast.error('Error', 'Failed to delete task');
+            showToast.error('Error', 'Failed to delete task');
         }
     };
 
@@ -107,8 +119,8 @@ export default function Dashboard() {
             </div>
             
             <button 
-            onClick={() => setIsModalOpen(true)}
-            className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-purple-600/20"
+                onClick={() => setIsModalOpen(true)}
+                className="cursor-pointer bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-purple-600/20"
             >
             + Create New Task
             </button>
