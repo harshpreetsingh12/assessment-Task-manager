@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 
 export default function Home() {
@@ -56,12 +55,12 @@ export default function Home() {
         <div className="mt-16 flex flex-wrap justify-center gap-8 opacity-50 grayscale hover:grayscale-0 transition-all">
           <div className="flex items-center gap-2 font-medium">⚡ Ultra Fast Inference</div>
           <div className="flex items-center gap-2 font-medium">🔒 Secure Auth</div>
-          <div className="flex items-center gap-2 font-medium">🤖 Smart RAG (v2)</div>
+          <div className="flex items-center gap-2 font-medium">🤖 Smart summarization</div>
         </div>
       </main>
 
       <footer className="py-8 text-center text-sm text-zinc-500 border-t border-zinc-100 dark:border-zinc-900">
-        © 2026 TaskAI - Built for Rubico Assignment
+        © 2026 TaskAI 
       </footer>
     </div>
   );

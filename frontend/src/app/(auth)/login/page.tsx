@@ -18,9 +18,14 @@ export default function LoginPage() {
     try {
       const res = await authService.login(formData);
 
-      showToast.success('Welcome back!', 'Redirecting to your dashboard...');
-      router.push('/dashboard');
-      router.refresh();
+      if(res.ok){
+        showToast.success('Welcome back!', 'Redirecting to your dashboard...');
+        router.push('/dashboard');
+        router.refresh();
+      }
+      else{
+          showToast.error('Authentication Error', 'Login attempt failed please check email or password');
+      }
       
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Connection failed';

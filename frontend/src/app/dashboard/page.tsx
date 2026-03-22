@@ -9,6 +9,7 @@ import AISummary from '@/components/AISummary';
 import { useAuth } from '@/context/Auth.Context';
 import { ITask } from "@/models/Task.model";
 import CreateEditTaskModal from '@/components/CreateEditTaskModal';
+import Spinner from '@/components/SpinnerLoader';
 
 export default function Dashboard() {
     const { user, loading: authLoading,logout } = useAuth();
@@ -77,6 +78,8 @@ export default function Dashboard() {
 
     return (
         <div className="w-4xl max-w-5xl mx-auto space-y-8 mt-5">
+
+        {authLoading ? <Spinner/> :null }
         {/* Header & AI Summary */}
         <section>
             <div className='flex justify-between items-center mb-6'>
