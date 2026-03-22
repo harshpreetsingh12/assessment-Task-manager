@@ -53,6 +53,32 @@ export const getTasks = async (req: Request, res: Response) => {
   }
 };
 
+// Update Task details
+export const updateTask = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const updates = req.body; 
+
+    if (typeof id !== "string" || !mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid task ID" });
+    }
+
+    const task = await Task.findOneAndUpdate(
+      { _id: id, userId: req.user.id },
+      { $set: updates },
+      { new: true } 
+    );
+
+    if (!task) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    res.json(task);
+  } catch (error) {
+    res.status(500).json({ message: "Error updating task" });
+  }
+};
+
 // Delete a Task
 export const deleteTask = async (req: Request, res: Response) => {
   try {
