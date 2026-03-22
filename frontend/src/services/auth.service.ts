@@ -17,6 +17,7 @@ export const authService = {
     const res = await apiClient('/auth/login', { method: 'POST', body: JSON.stringify(credentials) });
     if (res.data?.token) {
       Cookies.set('token', res.data.token, { expires: 7, secure: true, sameSite: 'strict' });
+      localStorage.setItem('hasSession', 'true');
     }
     return res;
   },
@@ -25,12 +26,14 @@ export const authService = {
     const res = await apiClient('/auth/register', { method: 'POST', body: JSON.stringify(userData) });
     if (res.data?.token) {
       Cookies.set('token', res.data.token, { expires: 7, secure: true, sameSite: 'strict' });
+      localStorage.setItem('hasSession', 'true');
     }
     return res;
   },
 
   logout: async () => {
     Cookies.remove('token');
+    localStorage.removeItem('hasSession');
     return apiClient('/auth/logout', { method: 'POST' });
   },
 };
