@@ -8,6 +8,9 @@ export const taskService = {
   createTask: (taskData: CreateTaskDTO) => 
     apiClient('/tasks', { method: 'POST', body: JSON.stringify(taskData) }),
 
+  updateTask: (id: string,taskData: CreateTaskDTO) => 
+    apiClient(`/tasks/${id}`, { method: 'PUT', body: JSON.stringify(taskData) }),
+
   deleteTask: (id: string) => 
     apiClient(`/tasks/${id}`, { method: 'DELETE' }),
     

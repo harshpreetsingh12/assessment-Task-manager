@@ -5,10 +5,10 @@ import { format } from 'date-fns';
 import { taskService } from '@/services/task.service';
 import { showToast } from '@/lib/toast';
 import TaskCard from '@/components/TaskCard';
-import CreateTaskModal from '@/components/CreateTaskModal';
 import AISummary from '@/components/AISummary';
 import { useAuth } from '@/context/Auth.Context';
 import { ITask } from "@/models/Task.model";
+import CreateEditTaskModal from '@/components/CreateEditTaskModal';
 
 export default function Dashboard() {
     const { user, loading: authLoading,logout } = useAuth();
@@ -16,6 +16,7 @@ export default function Dashboard() {
     const [tasks, setTasks] = useState([]);
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingTask, setEditingTask] = useState<ITask | null>(null);
     const [loading, setLoading] = useState(true);
     const isFirstRender = useRef(true);
 
@@ -32,6 +33,11 @@ export default function Dashboard() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleEditClick = (task: ITask) => {
+        setEditingTask(task)
+        setIsModalOpen(true)
     };
 
     useEffect(() => {
@@ -111,7 +117,7 @@ export default function Dashboard() {
                 <div className="text-center py-20 text-zinc-500">Loading your focus list...</div>
             ) : tasks.length > 0 ? (
             tasks.map((task: ITask) => (
-                <TaskCard key={task._id} task={task} onDelete={handleDelete} />
+                <TaskCard key={task._id} task={task} onDelete={handleDelete} onEdit={handleEditClick} />
             ))
             ) : (
             <div className="text-center py-20 bg-zinc-900/20 border border-dashed border-zinc-800 rounded-3xl text-zinc-500">
@@ -122,14 +128,21 @@ export default function Dashboard() {
 
         {/* Modal Popup */}
         {isModalOpen && (
-            <CreateTaskModal 
-                onClose={() => setIsModalOpen(false)} 
+            <CreateEditTaskModal
+                isEditMode={Boolean(editingTask)} 
+                initialData={editingTask}
+                onClose={() => {
+                    setIsModalOpen(false);
+                    setEditingTask(null);
+                }}
                 onSuccess={() => {
                     setIsModalOpen(false);
                     fetchTasks();
+                    setEditingTask(null);
                 }} 
             />
         )}
+        
         </div>
     );
 }

@@ -5,7 +5,7 @@ export interface ITask {
   description?: string;
   priority: 'low' | 'medium' | 'high';
   status: 'pending' | 'completed';
-  taskDate: Date;
+  taskDate: string;
 }
 
 export type CreateTaskDTO = {

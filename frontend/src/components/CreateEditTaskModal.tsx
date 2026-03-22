@@ -3,19 +3,21 @@
 import { useState, useEffect } from 'react';
 import { taskService } from '@/services/task.service';
 import { showToast } from '@/lib/toast';
-import { CreateTaskDTO } from '@/models/Task.model';
+import { CreateTaskDTO, ITask } from '@/models/Task.model';
 
 interface Props {
   onClose: () => void;
   onSuccess: () => void;
+  initialData?: ITask | null;
+  isEditMode?: boolean;
 }
 
-export default function CreateTaskModal({ onClose, onSuccess }: Props) {
+export default function CreateEditTaskModal({ onClose, onSuccess,initialData,isEditMode=false }: Props) {
   const [formData, setFormData] = useState<CreateTaskDTO>({
-    title: '',
-    description: '',
-    priority: 'medium',
-    taskDate: new Date().toISOString().split('T')[0], // Default to today
+    title: initialData?.title || '',
+    description: initialData?.description || '',
+    priority: initialData?.priority || 'medium',
+    taskDate:initialData?.taskDate ? new Date(initialData?.taskDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
   });
   const [loading, setLoading] = useState(false);
 
@@ -35,16 +37,31 @@ export default function CreateTaskModal({ onClose, onSuccess }: Props) {
     }
 
     setLoading(true);
-    try {
-      console.log(formData)
-      return
-      await taskService.createTask(formData);
-      showToast.success("Task Created", "Your focus list has been updated.");
-      onSuccess(); // Triggers the refetch in Dashboard
-    } catch (err) {
-      showToast.error("Error", "Failed to save task. Try again.");
-    } finally {
-      setLoading(false);
+    if(isEditMode){
+      try {
+        if(!initialData) {
+          showToast.success("Error", "Failed to update task. Try again.");
+          return
+        } 
+        await taskService.updateTask(initialData?._id, formData);
+        showToast.success("Task Updated", "Your focus list has been updated.");
+        onSuccess(); // Triggers the refetch in Dashboard
+      } catch (err) {
+        showToast.error("Error", "Failed to save task. Try again.");
+      } finally {
+        setLoading(false);
+      }
+    }
+    else{
+      try {
+        await taskService.createTask(formData);
+        showToast.success("Task Created", "Your focus list has been updated.");
+        onSuccess(); // Triggers the refetch in Dashboard
+      } catch (err) {
+        showToast.error("Error", "Failed to save task. Try again.");
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -110,7 +127,7 @@ export default function CreateTaskModal({ onClose, onSuccess }: Props) {
             disabled={loading}
             className="w-full py-4 bg-purple-600 hover:bg-purple-700 text-white rounded-2xl font-bold transition-all transform active:scale-[0.98] disabled:opacity-50 shadow-lg shadow-purple-600/20"
           >
-            {loading ? "Saving..." : "Create Task"}
+            {loading ? "Saving..." : isEditMode ? "Edit Task": "Create Task"}
           </button>
         </form>
       </div>
