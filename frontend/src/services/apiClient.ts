@@ -4,7 +4,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
 
 export const apiClient = async (endpoint: string, options: RequestInit = {}) => {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 10_000);
+  const timeout = setTimeout(() => controller.abort(), 70_000);
 
   const headers: { [key: string]: string } = {
     'Content-Type': 'application/json',
