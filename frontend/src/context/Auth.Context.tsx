@@ -57,7 +57,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    refreshUser();
+      const hasSession = localStorage.getItem('hasSession');
+      if (hasSession) {
+          refreshUser();
+      } else {
+          setLoading(false); 
+      }
   }, []);
 
   return (
