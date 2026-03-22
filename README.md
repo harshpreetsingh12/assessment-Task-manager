@@ -4,7 +4,7 @@
 
     **🚀 Live Demo:** [https://task-manager-teal-phi-87.vercel.app/](https://task-manager-teal-phi-87.vercel.app/)
 
-    > **⏳ Note on Deployment:** The backend is hosted on Render's free tier. If the site hasn't been visited recently, the server will "sleep." **Please allow up to 60 seconds for the initial wake-up** during your first login attempt.
+    > **⏳ Note on Deployment:** The backend is hosted on Render's free tier. If the site hasn't been visited recently, the server will "sleep." after nearly 15 minutes of inactivity  **Please allow up to 60 seconds for the initial wake-up** during your first login attempt.
 
     -----
 
