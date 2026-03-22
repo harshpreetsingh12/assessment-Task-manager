@@ -42,6 +42,7 @@ export default function Dashboard() {
     };
 
     useEffect(() => {
+        if(authLoading) return
         // first render — fetch immediately, no debounce
         if (isFirstRender.current) {
             isFirstRender.current = false;
@@ -55,7 +56,7 @@ export default function Dashboard() {
         }, 500);
 
         return () => clearTimeout(timer);
-    }, [selectedDate]);
+    }, [selectedDate,authLoading]);
 
     const handleDelete = async (id: string) => {
         try {
@@ -76,10 +77,12 @@ export default function Dashboard() {
          }
     }
 
+    if(authLoading){
+        return <Spinner/>
+    }
     return (
         <div className="w-4xl max-w-5xl mx-auto space-y-8 mt-5">
 
-        {authLoading ? <Spinner/> :null }
         {/* Header & AI Summary */}
         <section>
             <div className='flex justify-between items-center mb-6'>
