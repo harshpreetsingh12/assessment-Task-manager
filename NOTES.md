@@ -40,3 +40,4 @@ I didn't want to burn API credits for empty task lists or crash the app if the A
 * **Smart Search (RAG):** I want to implement **MongoDB Atlas Vector Search**. Instead of searching for the word "Gym," you could search for "Health," and the AI would find your gym tasks through semantic similarity.
 * **Redis Caching:** AI summaries don't need to be re-generated if the tasks haven't changed. Caching them in Redis would make the app lightning-fast and save costs.
 * **Proactive Briefings:** Using `node-cron` to send these summaries via **Web Push Notifications** at 8:00 AM daily, so the user doesn't even have to open the app to know their plan.
+* **Testing:** Implement Playwright for End-to-End (E2E) testing of the AI streaming flow.
