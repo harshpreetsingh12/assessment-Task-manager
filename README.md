@@ -39,7 +39,7 @@ Fallback handling: If the AI is slow or unavailable, the app falls back to a sim
 ```bash
     cd backend
     npm install
-    npm run seed # IMPORTANT: Creates test user & sample tasks
+    npm run seed # IMPORTANT: Creates test user(email:test@gmail.com & pass: test123) & sample tasks
     # Configure your .env (see .env.sample)
     npm run dev
 ```
