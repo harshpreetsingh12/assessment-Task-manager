@@ -125,6 +125,7 @@ export class AIService {
 
         const prompt = PROMPTS.CHAT_ASSISTANT(userQuestion, contextString);
 
+        // console.log(userQuestion,contextString)
         // Handle empty results case
         if (retrievedTasks.length === 0) {
             const fallBackmsg="I couldn't find any tasks related to that request. Try rephrasing or adding more details!"

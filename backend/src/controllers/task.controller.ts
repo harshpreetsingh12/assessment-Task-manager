@@ -186,7 +186,6 @@ export const taskChat = async (req: Request, res: Response) => {
     res.setHeader("Connection", "keep-alive");
     res.flushHeaders();
 
-    console.log(question,searchResults)
     try {
         await aiService.streamChatResponse(question,searchResults, (chunk) => {
           res.write(`data: ${JSON.stringify({ chunk })}\n\n`); 
@@ -218,8 +217,8 @@ async function chatWithTasks(userQuestion:string,userId:string):Promise<ITask[]>
           "path": "description_vector",  
           "queryVector": queryVector,
           "numCandidates":100,     // Internal pool to search from
-          "limit": 2 ,
-          "filter": { "userId": { "$eq": userId } }
+          "limit": 5 ,
+          "filter": { "userId": { "$eq": new mongoose.Types.ObjectId(userId) } }
         }
       },
       {
