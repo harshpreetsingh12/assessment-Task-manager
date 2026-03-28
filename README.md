@@ -55,6 +55,18 @@ Fallback handling: If the AI is slow or unavailable, the app falls back to a sim
 
 -----
 
+#### **3. Python embedding service**
+
+```bash
+    cd python-service
+    python -m venv venv
+    venv\Scripts\activate
+    pip install -r requirements.txt
+    python main.py #(first call to embedding gen may take time due to model loading)
+```
+
+-----
+
 ### 📂 Project Structure
 
 * **`/backend`**:
