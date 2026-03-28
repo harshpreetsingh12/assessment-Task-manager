@@ -5,4 +5,5 @@ export const CONF={
     MODEL_NAME_GEMINI:"gemini-2.0-flash",
     GROQ_API_KEY:process.env.GROQ_API_KEY,
     GROQ_MODELS:"llama-3.3-70b-versatile",
+    PYTHON_SERVICE_URI:process.env.PYTHON_SERVICE_URI,
 }

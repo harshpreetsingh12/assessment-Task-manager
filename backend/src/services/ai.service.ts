@@ -93,6 +93,22 @@ export class AIService {
 
   }
 
+  async generateEmbedding(text: string): Promise<number[]> {
+    try {
+      const response = await fetch(CONF.PYTHON_SERVICE_URI, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+
+      const data = await response.json();
+      return data.embedding;
+    } catch (error) {
+      console.error("Python AI Service Error:", error);
+      throw error;
+    }
+  }
+
 }
 
 

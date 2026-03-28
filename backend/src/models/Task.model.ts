@@ -7,6 +7,7 @@ export interface ITask extends Document {
   priority: 'low' | 'medium' | 'high';
   status: 'pending' | 'completed';
   taskDate: Date;
+  description_vector:[Number]
 }
 
 const taskSchema = new Schema<ITask>(
@@ -25,6 +26,10 @@ const taskSchema = new Schema<ITask>(
       default: 'pending',
     },
     taskDate: { type: Date }, 
+    description_vector: {
+      type: [Number],
+      default: [],
+    }
   },
   { timestamps: true }
 );

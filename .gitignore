@@ -21,6 +21,10 @@ out/
 /frontend/build/
 /frontend/package-lock.json
 
+# --- Python service Specific ---
+/python-service/__pycache__/
+/python-service/venv/
+
 # production
 /build
 
