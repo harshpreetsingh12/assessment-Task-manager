@@ -47,11 +47,14 @@ export class AIService {
               max_tokens: 300,
               stream: true,
           });
-
+          const READING_PACE_MS = 50;
           for await (const chunk of stream) {
               const delta = chunk.choices[0]?.delta?.content ?? "";
                 if (delta) {
-                  await new Promise(res => setTimeout(res, 50)); // subtle delay to show streaming
+                  // Introducing a small delay to simulate a consistent "typewriter" effect.
+                  // On high-end devices, tokens can arrive and render almost instantly,
+                  // which removes the streaming feel and can effect readability.
+                  await new Promise(res => setTimeout(res, READING_PACE_MS)); 
                   onChunk(delta);
               }
           }
