@@ -14,7 +14,7 @@ export class AIService {
   }
 
 
-  private async *fakeSteam(text: string): AsyncGenerator<string> {
+  private async *fakeStream(text: string): AsyncGenerator<string> {
       const words = text.split(' ');
       for (const word of words) {
           await new Promise(res => setTimeout(res, 80)); // ~80ms per word
@@ -86,7 +86,7 @@ export class AIService {
   
     const fallBackmsg=parts.join(" ")
 
-    const stream=this.fakeSteam(fallBackmsg)
+    const stream=this.fakeStream(fallBackmsg)
     for await (const chunk of stream) {
       onChunk(chunk);
     }
@@ -143,7 +143,7 @@ export class AIService {
         // Handle empty results case
         if (retrievedTasks.length === 0) {
             const fallBackmsg="I couldn't find any tasks related to that request. Try rephrasing or adding more details!"
-            const stream=this.fakeSteam(fallBackmsg)
+            const stream=this.fakeStream(fallBackmsg)
             for await (const chunk of stream) {
               onChunk(chunk);
             }
@@ -167,7 +167,7 @@ export class AIService {
             }
         } catch (error) {
             console.error("Groq Chat Stream Error:", error);
-            const stream=this.fakeSteam("I ran into a bit of trouble accessing your tasks right now. Please try again in a moment.")
+            const stream=this.fakeStream("I ran into a bit of trouble accessing your tasks right now. Please try again in a moment.")
             for await (const chunk of stream) {
               onChunk(chunk);
             }
@@ -175,44 +175,6 @@ export class AIService {
     }
     
 }
-
-
-// export class AIService {
-//   private genAI: GoogleGenerativeAI;
-//   private model: any;
-
-//   constructor() {
-//     this.genAI = new GoogleGenerativeAI(CONF.GEMINI_API_KEY!);
-//     this.model = this.genAI.getGenerativeModel({ model: CONF.MODEL_NAME_GEMINI });
-//   }
-
-//   /**
-//    * Generates a plain-English briefing based on task data
-//    */
-//   async generateDailyBriefing(tasks: ITask[]): Promise<string> {
-//     const taskListString = tasks
-//       .map((t, i) => `${i + 1}. ${t.title} [Priority: ${t.priority}]`)
-//       .join("\n");
-
-//     const prompt = `
-//       System: You are a professional productivity coach.
-//       User Tasks for Today:
-//       ${taskListString}
-
-//       Instruction: Provide a friendly, concise 3-sentence daily briefing. 
-//       Highlight high-priority items and be encouraging.
-//     `;
-//     // LLM Call
-//     try {
-//       const result = await this.model.generateContent(prompt);
-//       const response = await result.response;
-//       return response.text();
-//     } catch (error) {
-//       console.error("Gemini API Error:", error);
-//       throw new Error("Failed to communicate with AI service.");
-//     }
-//   }
-// }
 
 export const aiService = new AIService();
 
