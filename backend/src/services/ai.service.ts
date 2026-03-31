@@ -93,22 +93,36 @@ export class AIService {
 
   }
 
-  async generateEmbedding(text: string): Promise<number[]> {
-    try {
-      const response = await fetch(CONF.PYTHON_SERVICE_URI, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text }),
-      });
-
+    async generateEmbedding(text: string): Promise<number[]> {
+      try {
+      const response = await fetch(
+       CONF.HUGGING_FACE_EMBEDDINGS,
+        {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${process.env.HUGGING_FACE_TOKEN}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ inputs: text }),
+        }
+      );
+    
       const data = await response.json();
-      return data.embedding;
+
+      // const response = await fetch(process.env.PYTHON_SERVICE_URI, {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify({ text }),
+      // });
+
+      // const data = await response.json();
+      // return data.embedding;
+      return data;
     } catch (error) {
       console.error("Python AI Service Error:", error);
       throw error;
     }
   }
-
   async streamChatResponse(
       userQuestion: string, 
       retrievedTasks: any[], 

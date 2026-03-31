@@ -6,4 +6,5 @@ export const CONF={
     GROQ_API_KEY:process.env.GROQ_API_KEY,
     GROQ_MODELS:"llama-3.3-70b-versatile",
     PYTHON_SERVICE_URI:process.env.PYTHON_SERVICE_URI,
+    HUGGING_FACE_EMBEDDINGS:"https://router.huggingface.co/hf-inference/models/sentence-transformers/all-MiniLM-L6-v2/pipeline/feature-extraction"
 }
