@@ -2,7 +2,7 @@ import mongoose, { Document } from "mongoose";
 import bcrypt from "bcrypt";
 
 export interface IUser extends Document {
-  name: String,
+  name: string,
   email: string;
   password: string;
   createdAt: Date;
