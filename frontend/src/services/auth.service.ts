@@ -15,8 +15,7 @@ type RegisterCredentials = {
 export const authService = {
   login: async (credentials: LoginCredentials) => {
     const res = await apiClient('/auth/login', { method: 'POST', body: JSON.stringify(credentials) });
-    if (res.data?.token) {
-      // Cookies.set('token', res.data.token, { expires: 7, secure: true, sameSite: 'strict' });
+    if (res.ok) {
       Cookies.set('isLoggedIn', 'true', { 
         expires: 7,
         secure: true,
@@ -29,13 +28,12 @@ export const authService = {
 
   register: async (userData: RegisterCredentials) => {
     const res = await apiClient('/auth/register', { method: 'POST', body: JSON.stringify(userData) });
-    if (res.data?.token) {
+    if (res.ok) {
         Cookies.set('isLoggedIn', 'true', { 
           expires: 7,
           secure: true,
           sameSite: 'strict'  
         });
-      // Cookies.set('token', res.data.token, { expires: 7, secure: true, sameSite: 'strict' });
       localStorage.setItem('hasSession', 'true');
     }
     return res;

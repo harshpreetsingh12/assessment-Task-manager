@@ -45,8 +45,7 @@ export const register = async (req: Request, res: Response) => {
 
     res.status(201).json({
       _id: user._id,
-      email: user.email,
-      token: accessToken,
+      email: user.email
     });
   } catch (error) {
     console.error('Registration Error:', error);
@@ -70,8 +69,7 @@ export const login = async (req: Request, res: Response) => {
 
       res.json({
         _id: user._id,
-        email: user.email,
-        token: accessToken,
+        email: user.email
       });
     } else {
       res.status(401).json({ message: 'Invalid email or password' });
